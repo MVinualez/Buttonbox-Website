@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compiler pour Arduino/ESP32</title>
+</head>
+<body>
+    <h1>Générer un fichier .bin</h1>
+    <form id="compile-form">
+        <label for="board">Type de carte :</label>
+        <select id="board" name="board">
+            <option value="arduino">Arduino Pro Micro</option>
+            <option value="esp32">ESP32</option>
+        </select>
+        <br>
+        <label for="led_pin">Pin de la LED :</label>
+        <input type="text" id="led_pin" name="led_pin" value="LED_BUILTIN">
+        <br>
+        <button type="submit">Compiler</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById("compile-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch("/compile", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+            if (data.success) {
+                const link = document.createElement("a");
+                link.href = data.download_url;
+                link.textContent = "Télécharger le fichier .bin";
+                document.getElementById("result").appendChild(link);
+            } else {
+                document.getElementById("result").textContent = "Erreur : " + data.error;
+            }
+        });
+    </script>
+</body>
+</html>
